@@ -8,6 +8,7 @@ mp_drawing = mp.solutions.drawing_utils
 
 def detect_hand_gesture(frame):
     # Convert the image to RGB (MediaPipe uses RGB)
+    print("start detecting hands?")
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     
     # Process the frame and detect hands
