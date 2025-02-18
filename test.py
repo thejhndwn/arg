@@ -25,6 +25,7 @@ frame = image = cv2.imread('test.jpg')
 
 
 print(type(frame))
+print(frame.shape)
 
 
 mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
@@ -40,7 +41,7 @@ key = cv2.waitKey(0) & 0xFF  # Wait for a key press
 # TODO: add hand-checking stuff here
 hand_recognition_result = recognizer.recognize(mp_image)
 print(hand_recognition_result)
-print(hand_recognition_result.gestures)
+print(hand_recognition_result[0].gestures)
 
 print("ending the loop")
 
