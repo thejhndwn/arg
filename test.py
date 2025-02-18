@@ -1,179 +1,86 @@
-import argparse
-import sys
-from functools import lru_cache
-
+from picamera2 import Picamera2
 import cv2
+import mediapipe as mp
 import numpy as np
-
-from picamera2 import MappedArray, Picamera2
-from picamera2.devices import IMX500
-from picamera2.devices.imx500 import (NetworkIntrinsics,
-                                      postprocess_nanodet_detection)
-
-last_detections = []
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
 
 
-class Detection:
-    def __init__(self, coords, category, conf, metadata):
-        """Create a Detection object, recording the bounding box, category and confidence."""
-        self.category = category
-        self.conf = conf
-        self.box = imx500.convert_inference_coords(coords, metadata, picam2)
+print("starting up...")
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={'size': (640, 480)}))
+picam2.start()
+
+base_options = python.BaseOptions(model_asset_path='gesture_recognizer.task')
+options = vision.GestureRecognizerOptions(base_options=base_options)
+recognizer = vision.GestureRecognizer.create_from_options(options)
 
 
-def parse_detections(metadata: dict):
-    """Parse the output tensor into a number of detected objects, scaled to the ISP output."""
-    global last_detections
-    bbox_normalization = intrinsics.bbox_normalization
-    bbox_order = intrinsics.bbox_order
-    threshold = args.threshold
-    iou = args.iou
-    max_detections = args.max_detections
+current_mode = "idle"
 
-    np_outputs = imx500.get_outputs(metadata, add_batch=True)
-    input_w, input_h = imx500.get_input_size()
-    if np_outputs is None:
-        return last_detections
-    if intrinsics.postprocess == "nanodet":
-        boxes, scores, classes = \
-            postprocess_nanodet_detection(outputs=np_outputs[0], conf=threshold, iou_thres=iou,
-                                          max_out_dets=max_detections)[0]
-        from picamera2.devices.imx500.postprocess import scale_boxes
-        boxes = scale_boxes(boxes, 1, 1, input_h, input_w, False, False)
-    else:
-        boxes, scores, classes = np_outputs[0][0], np_outputs[1][0], np_outputs[2][0]
-        if bbox_normalization:
-            boxes = boxes / input_h
-
-        if bbox_order == "xy":
-            boxes = boxes[:, [1, 0, 3, 2]]
-        boxes = np.array_split(boxes, 4, axis=1)
-        boxes = zip(*boxes)
-
-    last_detections = [
-        Detection(box, category, score, metadata)
-        for box, score, category in zip(boxes, scores, classes)
-        if score > threshold
-    ]
-    return last_detections
+print("starting the loop")
 
 
-@lru_cache
-def get_labels():
-    labels = intrinsics.labels
-
-    if intrinsics.ignore_dash_labels:
-        labels = [label for label in labels if label and label != "-"]
-    return labels
+frame = image = cv2.imread('test.jpg')
 
 
-def draw_detections(request, stream="main"):
-    """Draw the detections for this request onto the ISP output."""
-    detections = last_results
-    if detections is None:
-        return
-    labels = get_labels()
-    with MappedArray(request, stream) as m:
-        for detection in detections:
-            x, y, w, h = detection.box
-            label = f"{labels[int(detection.category)]} ({detection.conf:.2f})"
-
-            # Calculate text size and position
-            (text_width, text_height), baseline = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-            text_x = x + 5
-            text_y = y + 15
-
-            # Create a copy of the array to draw the background with opacity
-            overlay = m.array.copy()
-
-            # Draw the background rectangle on the overlay
-            cv2.rectangle(overlay,
-                          (text_x, text_y - text_height),
-                          (text_x + text_width, text_y + baseline),
-                          (255, 255, 255),  # Background color (white)
-                          cv2.FILLED)
-
-            alpha = 0.30
-            cv2.addWeighted(overlay, alpha, m.array, 1 - alpha, 0, m.array)
-
-            # Draw text on top of the background
-            cv2.putText(m.array, label, (text_x, text_y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
-
-            # Draw detection box
-            cv2.rectangle(m.array, (x, y), (x + w, y + h), (0, 255, 0, 0), thickness=2)
-
-        if intrinsics.preserve_aspect_ratio:
-            b_x, b_y, b_w, b_h = imx500.get_roi_scaled(request)
-            color = (255, 0, 0)  # red
-            cv2.putText(m.array, "ROI", (b_x + 5, b_y + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
-            cv2.rectangle(m.array, (b_x, b_y), (b_x + b_w, b_y + b_h), (255, 0, 0, 0))
+print(type(frame))
 
 
-def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, help="Path of the model",
-                        default="/usr/share/imx500-models/imx500_network_ssd_mobilenetv2_fpnlite_320x320_pp.rpk")
-    parser.add_argument("--fps", type=int, help="Frames per second")
-    parser.add_argument("--bbox-normalization", action=argparse.BooleanOptionalAction, help="Normalize bbox")
-    parser.add_argument("--bbox-order", choices=["yx", "xy"], default="yx",
-                        help="Set bbox order yx -> (y0, x0, y1, x1) xy -> (x0, y0, x1, y1)")
-    parser.add_argument("--threshold", type=float, default=0.55, help="Detection threshold")
-    parser.add_argument("--iou", type=float, default=0.65, help="Set iou threshold")
-    parser.add_argument("--max-detections", type=int, default=10, help="Set max detections")
-    parser.add_argument("--ignore-dash-labels", action=argparse.BooleanOptionalAction, help="Remove '-' labels ")
-    parser.add_argument("--postprocess", choices=["", "nanodet"],
-                        default=None, help="Run post process of type")
-    parser.add_argument("-r", "--preserve-aspect-ratio", action=argparse.BooleanOptionalAction,
-                        help="preserve the pixel aspect ratio of the input tensor")
-    parser.add_argument("--labels", type=str,
-                        help="Path to the labels file")
-    parser.add_argument("--print-intrinsics", action="store_true",
-                        help="Print JSON network_intrinsics then exit")
-    return parser.parse_args()
+mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+
+cv2.imshow("Captured Frame", frame)
+
+key = cv2.waitKey(0) & 0xFF  # Wait for a key press
+
+# Exit the loop if 'q' is pressed or the window is closed
+
+# we should always be doing the hand checking
+# hand checking overrides everythinig
+# TODO: add hand-checking stuff here
+hand_recognition_result = recognizer.recognize(mp_image)
+print(hand_recognition_result)
+print(hand_recognition_result.gestures)
+
+print("ending the loop")
 
 
-if __name__ == "__main__":
-    args = get_args()
 
-    # This must be called before instantiation of Picamera2
-    imx500 = IMX500(args.model)
-    intrinsics = imx500.network_intrinsics
-    if not intrinsics:
-        intrinsics = NetworkIntrinsics()
-        intrinsics.task = "object detection"
-    elif intrinsics.task != "object detection":
-        print("Network is not an object detection task", file=sys.stderr)
-        exit()
+# otherwise we feed through to whatever the given mode is
+# TODO: add mode-specific checking here
 
-    # Override intrinsics from args
-    for key, value in vars(args).items():
-        if key == 'labels' and value is not None:
-            with open(value, 'r') as f:
-                intrinsics.labels = f.read().splitlines()
-        elif hasattr(intrinsics, key) and value is not None:
-            setattr(intrinsics, key, value)
+# results should be sent to the display generator
+# TODO: add results here
 
-    # Defaults
-    if intrinsics.labels is None:
-        with open("assets/coco_labels.txt", "r") as f:
-            intrinsics.labels = f.read().splitlines()
-    intrinsics.update_with_defaults()
 
-    if args.print_intrinsics:
-        print(intrinsics)
-        exit()
 
-    picam2 = Picamera2(imx500.camera_num)
-    config = picam2.create_preview_configuration(controls={"FrameRate": intrinsics.inference_rate}, buffer_count=12)
 
-    imx500.show_network_fw_progress_bar()
-    picam2.start(config, show_preview=True)
 
-    if intrinsics.preserve_aspect_ratio:
-        imx500.set_auto_aspect_ratio()
+#     cv2.imshow("camera feed", frame)
 
-    last_results = None
-    picam2.pre_callback = draw_detections
-    while True:
-        last_results = parse_detections(picam2.capture_metadata())
+#     # Detect hand gestures and get the number of fingers raised
+#     # frame, fingers_up = detect_hand_gesture(frame)
+
+#     if fingers_up == 0:
+#         current_mode = "main_menu"
+
+#     if current_mode == "main_menu":
+#         print("Main Menu: Show fingers to select mode.")
+#         if fingers_up == 1:
+#             current_mode = "display_mode"
+#         elif fingers_up == 2:
+#             current_mode = "chess_mode"
+#         elif fingers_up == 3:
+#             current_mode = "object_classify_mode"
+
+#     # Activate the selected mode
+#     frame = mode_functions.get(current_mode, lambda x: x)(frame)
+
+#     # Show the video feed with overlay
+#     cv2.imshow('Gesture Controlled Glasses', frame)
+
+#     if cv2.waitKey(1) & 0xFF == ord('q'):
+#         break
+
+cv2.destroyAllWindows()
+picam2.stop()

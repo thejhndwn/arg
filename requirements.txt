@@ -1,5 +1,6 @@
 opencv-python
 picamera2
+python3-libcamera
 numpy==1.26.4
 tensorflow
 mediapipe

@@ -12,7 +12,8 @@ picam2.configure(picam2.create_preview_configuration(main={'size': (640, 480)}))
 picam2.start()
 
 base_options = python.BaseOptions(model_asset_path='gesture_recognizer.task')
-options = vision.GestureRecognizerOptions(base_options=base_options)
+options = vision.GestureRecognizerOptions(base_options=base_options,
+                                        running_mode=vision.RunningMode.IMAGE)
 recognizer = vision.GestureRecognizer.create_from_options(options)
 
 
@@ -25,12 +26,21 @@ while True:
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
 
     cv2.imshow("Captured Frame", frame)
+    
+    key = cv2.waitKey(0) & 0xFF  # Wait for a key press
+
+    # Exit the loop if 'q' is pressed or the window is closed
+    if key == ord('q'):
+        break
 
     # we should always be doing the hand checking
     # hand checking overrides everythinig
     # TODO: add hand-checking stuff here
     hand_recognition_result = recognizer.recognize(mp_image)
     print(hand_recognition_result)
+    print(hand_recognition_result.gestures)
+    
+    print("ending the loop")
 
 
 
