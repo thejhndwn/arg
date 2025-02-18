@@ -63,8 +63,8 @@ print("starting the loop")
 while True:
     image = picam2.capture_array()
 
+    # Convert the image from BGR to RGB as required by the TFLite model
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_image)    
 
     # we should always be doing the hand checking
@@ -130,12 +130,16 @@ while True:
                                           z=landmark.z) for landmark in
           hand_landmarks
         ])
-        mp_drawing.draw_landmarks(
-          current_frame,
-          hand_landmarks_proto,
-          mp_hands.HAND_CONNECTIONS,
-          mp_drawing_styles.get_default_hand_landmarks_style(),
-          mp_drawing_styles.get_default_hand_connections_style())
+        try:
+            mp_drawing.draw_landmarks(
+              current_frame,
+              hand_landmarks_proto,
+              mp_hands.HAND_CONNECTIONS,
+              mp_drawing_styles.get_default_hand_landmarks_style(),
+              mp_drawing_styles.get_default_hand_connections_style())
+        except:
+            print("failure, showing image")
+            cv2.imshow('failed image', current_frame)
 
       recognition_frame = current_frame
       print(recognition_result_list)
