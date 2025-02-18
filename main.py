@@ -1,32 +1,44 @@
 from picamera2 import Picamera2
 import cv2
-# from modes.display_mode import activate_display_mode
-# from modes.chess_mode import activate_chess_mode
-# from modes.object_classifier_mode import classify_object
+import mediapipe as mp
+import numpy as np
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
 
-# Initialize PiCamera2
+
 print("starting up...")
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={'size': (640, 480)}))
 picam2.start()
 
-# current_mode = "idle"
-# mode_functions = {
-#     "display_mode": activate_display_mode,
-#     "chess_mode": activate_chess_mode,
-#     "object_classify_mode": classify_object,
-# }
+base_options = python.BaseOptions(model_asset_path='gesture_recognizer.task')
+options = vision.GestureRecognizerOptions(base_options=base_options)
+recognizer = vision.GestureRecognizer.create_from_options(options)
+
+
+current_mode = "idle"
 
 print("starting the loop")
 while True:
     frame = picam2.capture_array()
 
+    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
+
     cv2.imshow("Captured Frame", frame)
 
-    # intake the frame
-    # frame should go through the interpreter of the chosen mode + the hand gesture model
+    # we should always be doing the hand checking
+    # hand checking overrides everythinig
+    # TODO: add hand-checking stuff here
+    hand_recognition_result = recognizer.recognize(mp_image)
+    print(hand_recognition_result)
+
+
+
+    # otherwise we feed through to whatever the given mode is
+    # TODO: add mode-specific checking here
+
     # results should be sent to the display generator
-    # complete the loop
+    # TODO: add results here
 
 
 
