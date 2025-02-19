@@ -20,6 +20,8 @@ while True:
     image = picam2.capture_array()
     gesture_interpreter.process_frame(image)
 
+    print("restarting the loop")
+
     
 cv2.destroyAllWindows()
 picam2.stop()
