@@ -53,7 +53,6 @@ class GestureInterpreter():
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_image)    
         self.recognizer.recognize_async(mp_image, time.time_ns() // 1_000_000)
         self.generate_display()
-        self.close()
 
     def generate_display(self):
         pass

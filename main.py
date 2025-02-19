@@ -22,6 +22,7 @@ while True:
 
     print("restarting the loop")
 
-    
+
+gesture_interpreter.close()
 cv2.destroyAllWindows()
 picam2.stop()
