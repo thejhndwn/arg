@@ -32,7 +32,7 @@ def callback(result: vision.GestureRecognizerResult,
     pass
 
 class GestureInterpreter():
-    def __init__(self, interval):
+    def __init__(self, interval = 1):
         self.interval = interval
 
         base_options = python.BaseOptions(model_asset_path='gesture_recognizer.task')
@@ -55,7 +55,7 @@ class GestureInterpreter():
         self.generate_display()
         self.close()
 
-    def generate_display():
+    def generate_display(self):
         pass
 
     def close(self):
