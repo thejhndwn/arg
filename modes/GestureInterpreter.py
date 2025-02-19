@@ -16,7 +16,10 @@ mp_drawing_styles = mp.solutions.drawing_styles
     # we might be passing the function from the main.py and picking it up there
 def callback(result: vision.GestureRecognizerResult, 
              output_image: mp.Image, timestamp_ms:int):
-    
+
+    print("callback activation")
+    print(result)
+        
     if result.gestures:
         gesture = result.gestures[0] 
         # TODO check the above works, the index should be wrong
@@ -48,7 +51,7 @@ class GestureInterpreter():
         rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_image)    
         self.recognizer.recognize_async(mp_image, time.time_ns() // 1_000_000)
-        self.generate_display
+        self.generate_display()
         self.close()
 
     def generate_display():
