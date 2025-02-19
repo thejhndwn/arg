@@ -42,6 +42,9 @@ def save_result(result: vision.GestureRecognizerResult,
       if COUNTER % fps_avg_frame_count == 0:
           FPS = fps_avg_frame_count / (time.time() - START_TIME)
           START_TIME = time.time()
+          
+      print("callback")
+      print(result)
 
       recognition_result_list.append(result)
       COUNTER += 1
@@ -72,7 +75,7 @@ while True:
     # TODO: add hand-checking stuff here
     hand_recognition_result = recognizer.recognize_async(mp_image, time.time_ns() // 1_000_000)
     
-    print(hand_recognition_result)
+    # print(hand_recognition_result)
     
     
     # Show the FPS
@@ -138,11 +141,10 @@ while True:
               mp_drawing_styles.get_default_hand_landmarks_style(),
               mp_drawing_styles.get_default_hand_connections_style())
         except:
-            print("failure, showing image")
-            cv2.imshow('failed image', current_frame)
-
+            # here I was printing the list and getting the results
+            continue 
+            
       recognition_frame = current_frame
-      print(recognition_result_list)
       recognition_result_list.clear()
 
     if recognition_frame is not None:
