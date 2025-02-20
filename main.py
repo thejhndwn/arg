@@ -2,6 +2,7 @@ from picamera2 import Picamera2
 import numpy as np
 from modes import GestureInterpreter
 from modes import ModeOrchestrator
+from helpers import DisplayManager
 
 
 print("starting up...")
@@ -11,6 +12,9 @@ picam2.start()
 
 mode_orchestrator = ModeOrchestrator()
 gesture_interpreter = GestureInterpreter(mode_orchestrator.gesture_intake)
+display_manager = DisplayManager()
+display_manager.display_text()
+
 
 frame_count = 0
 
@@ -22,6 +26,7 @@ while True:
     print("restarting the loop")
 
 
+display_manager.close()
 gesture_interpreter.close()
 cv2.destroyAllWindows()
 picam2.stop()
