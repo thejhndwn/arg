@@ -13,7 +13,7 @@ picam2.start()
 mode_orchestrator = ModeOrchestrator()
 gesture_interpreter = GestureInterpreter(mode_orchestrator.gesture_intake)
 display_manager = DisplayManager()
-display_manager.display_text()
+display_manager.display_text('Jingang')
 
 
 frame_count = 0
