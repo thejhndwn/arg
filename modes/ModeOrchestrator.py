@@ -19,17 +19,19 @@ class ModeOrchestrator:
 
         if result.gestures:
             print("found some gestures")
-            gesture = result.gestures[0] 
+            gesture_object = result.gestures[0] 
             # TODO check the above works, the index should be wrong
             # for the above, somehow it grabs by the hand_index...idk
             #  gesture = recognition_result_list[0].gestures[hand_index]
 
-            category_name = gesture[0].category_name
+            gesture = gesture_object[0].category_name
+            print(gesture)
 
-            print(category_name)
+            self.handle_gesture(gesture)
         else:
             # no gesture was found but it might be that we're looking
             # for a chessboard or an object to classify
+            pass
         
         print("exiting the callback")
 
@@ -84,3 +86,4 @@ class ModeOrchestrator:
         # OBJECT RECOGNITION
         if self.current_mode_index == 3:
             pass
+
