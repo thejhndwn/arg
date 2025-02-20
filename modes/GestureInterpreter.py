@@ -4,11 +4,6 @@ import cv2
 
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-from mediapipe.framework.formats import landmark_pb2
-
-mp_hands = mp.solutions.hands
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
 
 # here we actually get the result and we need to somehow
     # use this to return the recognized gestures
@@ -17,9 +12,6 @@ mp_drawing_styles = mp.solutions.drawing_styles
 def callback(result: vision.GestureRecognizerResult, 
              output_image: mp.Image, timestamp_ms:int):
 
-    print("callback activation")
-    print(result)
-        
     if result.gestures:
         gesture = result.gestures[0] 
         # TODO check the above works, the index should be wrong
@@ -29,10 +21,9 @@ def callback(result: vision.GestureRecognizerResult,
         category_name = gesture[0].category_name
         print(category_name)
     
-    pass
 
 class GestureInterpreter():
-    def __init__(self, interval = 1):
+    def __init__(self, gesture_intake_function, interval = 1):
         self.interval = interval
 
         base_options = python.BaseOptions(model_asset_path='gesture_recognizer.task')
@@ -42,7 +33,7 @@ class GestureInterpreter():
                                           min_hand_detection_confidence=0.5,
                                           min_hand_presence_confidence=0.5,
                                           min_tracking_confidence=0.5,
-                                        result_callback=callback)
+                                        result_callback=gesture_intake_function)
         self.recognizer = vision.GestureRecognizer.create_from_options(options)
 
     def process_frame(self, image):

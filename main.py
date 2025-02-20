@@ -1,6 +1,7 @@
 from picamera2 import Picamera2
 import numpy as np
 from modes import GestureInterpreter
+from modes import ModeOrchestrator
 
 
 print("starting up...")
@@ -8,7 +9,8 @@ picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={'size': (640, 480)}))
 picam2.start()
 
-gesture_interpreter = GestureInterpreter()
+mode_orchestrator = ModeOrchestrator()
+gesture_interpreter = GestureInterpreter(mode_orchestrator.gesture_intake)
 
 
 
