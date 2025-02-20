@@ -7,8 +7,9 @@ class ModeOrchestrator:
     def __init__(self):
         self.current_mode_index = 1
         self.main_menu = False
-        self.proc = False
-        self.modes = ['Display Mode', 'Chess Mode', 'Classifier Mode']
+        self.main_menu_selection = 1
+        self.main_menu_proc = False
+        self.modes = ['Menu Mode', 'Display Mode', 'Chess Mode', 'Classifier Mode']
 
 
     def gesture_intake(self, result: vision.GestureRecognizerResult, output_image: mp.Image, timestamp_ms:int):
@@ -24,65 +25,56 @@ class ModeOrchestrator:
             #  gesture = recognition_result_list[0].gestures[hand_index]
 
             category_name = gesture[0].category_name
+
             print(category_name)
         
         print("exiting the callback")
 
+    def handle_gesture(self, gesture):
+        # TODO: add frame and gesture debouncing
+        if gesture == 'Love':
+            self.main_menu_proc = True
+            # TODO: display the main menu proc sign
+
+        elif gesture == 'Victory' and self.main_menu_proc:
+            self.main_menu = True 
+            self.main_menu_proc = False
+            self.current_mode_index = 0
+            # TODO: open the Main menu
         
+        elif self.current_mode_index == 0:
+            # we are in the main menu and need to process the gestures
+            if gesture == 'Thumb Up':
+                # move the selection up
+                self.main_menu_selection -=1 
+                if self.main_menu_selection == 0:
+                    self.main_menu_selection = 3
+            if gesture == 'Thumb Down':
+                # move the selection down
+                self.main_menu_selection +=1
+                if self.main_menu_selection == len(self.modes):
+                    self.main_menu_selection = 1
+            if gesture == 'Victory':
+                # confirm
+                self.current_mode_index = self.main_menu_selection
+                # TODO: handle change to current mode
+
+        # TODO: figure out the display logic
+        # just doing a simple static display for now, so nothing has to happen here
+        if self.current_mode_index == 1:
+            # do some checks for display mode
+            if gesture == 'Thumb Up':
+                # should cycle through the displays
+                #
+                pass
+            if gesture == 'Thumb Down': 
+                # should cycle through the displays
+                pass
         
+        if self.current_mode_index == 2:
+            if gesture == 'Point Up':
 
-    # def process_gesture(self, gesture):
-    #     if self.state == 'string_display_mode':
-    #         self.handle_string_display_mode(gesture)
-    #     elif self.state == 'chess_analysis_mode':
-    #         self.handle_chess_analysis_mode(gesture)
-    #     elif self.state == 'object_classification_mode':
-    #         self.handle_object_classification_mode(gesture)
-    #     elif self.state == 'menu_mode':
-    #         self.handle_menu_mode(gesture)
+                pass
 
-    # def handle_string_display_mode(self, gesture):
-    #     if gesture == 'fist':
-    #         self.transition_to('menu_mode')
-    #     elif gesture == 'victory':
-    #         print("Confirm action in String Display Mode")
-
-    # def handle_chess_analysis_mode(self, gesture):
-    #     if gesture == 'fist':
-    #         self.transition_to('menu_mode')
-    #     elif gesture == 'victory':
-    #         print("Confirm action in Chess Analysis Mode")
-
-    # def handle_object_classification_mode(self, gesture):
-    #     if gesture == 'fist':
-    #         self.transition_to('menu_mode')
-    #     elif gesture == 'victory':
-    #         print("Confirm action in Object Classification Mode")
-
-    # def handle_menu_mode(self, gesture):
-    #     if gesture == 'down':
-    #         self.scroll_menu('down')
-    #     elif gesture == 'up':
-    #         self.scroll_menu('up')
-    #     elif gesture == 'victory':
-    #         self.select_menu_option()
-
-    # def transition_to(self, new_state):
-    #     print(f"Transitioning to {new_state}")
-    #     self.state = new_state
-
-    # def scroll_menu(self, direction):
-    #     if direction == 'down':
-    #         self.selected_option = (self.selected_option + 1) % len(self.menu)
-    #     elif direction == 'up':
-    #         self.selected_option = (self.selected_option - 1) % len(self.menu)
-    #     print(f"Menu Scrolled: {self.menu[self.selected_option]}")
-
-    # def select_menu_option(self):
-    #     print(f"Selected: {self.menu[self.selected_option]}")
-
-# Example usage
-# glasses = GlassesStateMachine()
-# gestures = ['fist', 'down', 'down', 'victory']  # Simulated gestures
-# for gesture in gestures:
-#     glasses.process_gesture(gesture)
+        if self.current_mode_index == 3:
+            pass

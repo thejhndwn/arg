@@ -12,10 +12,7 @@ picam2.start()
 mode_orchestrator = ModeOrchestrator()
 gesture_interpreter = GestureInterpreter(mode_orchestrator.gesture_intake)
 
-
-
-
-current_mode = "idle"
+frame_count = 0
 
 print("starting the loop")
 while True:
