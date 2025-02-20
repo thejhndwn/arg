@@ -27,6 +27,9 @@ class ModeOrchestrator:
             category_name = gesture[0].category_name
 
             print(category_name)
+        else:
+            # no gesture was found but it might be that we're looking
+            # for a chessboard or an object to classify
         
         print("exiting the callback")
 
@@ -61,6 +64,7 @@ class ModeOrchestrator:
 
         # TODO: figure out the display logic
         # just doing a simple static display for now, so nothing has to happen here
+        # STATIC DISPLAY
         if self.current_mode_index == 1:
             # do some checks for display mode
             if gesture == 'Thumb Up':
@@ -71,10 +75,12 @@ class ModeOrchestrator:
                 # should cycle through the displays
                 pass
         
+        # CHESS MODE
         if self.current_mode_index == 2:
             if gesture == 'Point Up':
 
                 pass
 
+        # OBJECT RECOGNITION
         if self.current_mode_index == 3:
             pass
