@@ -14,8 +14,10 @@ class ModeOrchestrator:
     def gesture_intake(self, result: vision.GestureRecognizerResult, output_image: mp.Image, timestamp_ms:int):
         
         print("callback activation")
+        print(result)
 
         if result.gestures:
+            print("found some gestures")
             gesture = result.gestures[0] 
             # TODO check the above works, the index should be wrong
             # for the above, somehow it grabs by the hand_index...idk
@@ -23,6 +25,8 @@ class ModeOrchestrator:
 
             category_name = gesture[0].category_name
             print(category_name)
+        
+        print("exiting the callback")
 
         
         
