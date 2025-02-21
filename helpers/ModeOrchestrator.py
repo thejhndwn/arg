@@ -1,6 +1,7 @@
 from helpers import GestureConfirmationSystem
 import mediapipe as mp
 from mediapipe.tasks.python import vision
+import time
 
 
 
@@ -12,6 +13,8 @@ class ModeOrchestrator:
         self.main_menu_proc = False
         self.modes = ['Menu Mode', 'Display Mode', 'Chess Mode', 'Classifier Mode']
         self.gesture_confirmation_system = GestureConfirmationSystem()
+
+        self.last_gesture_time = None
 
     def gesture_intake(self, result: vision.GestureRecognizerResult, output_image: mp.Image, timestamp_ms:int):
         
@@ -26,10 +29,13 @@ class ModeOrchestrator:
             #  gesture = recognition_result_list[0].gestures[hand_index]
 
             gesture = gesture_object[0].category_name
-            print(gesture)
+            print("picked up:", gesture)
+            gesture = self.gesture_confirmation_system.add_gesture_observation(gesture)
+            print("aggregated gesture", gesture)
 
             self.handle_gesture(gesture)
         else:
+            print("no gesture found")
             # no gesture was found but it might be that we're looking
             # for a chessboard or an object to classify
             pass
@@ -37,6 +43,18 @@ class ModeOrchestrator:
         print("exiting the callback")
 
     def handle_gesture(self, gesture):
+        current_time = time.time()
+
+        if self.last_gesture_time:
+            if current_time - self.last_gesture_time > 1:
+                self.last_gesture_time = current_time
+            else:
+                return
+        else: 
+            self.last_gesture_time = current_time
+
+
+
         # TODO: add frame and gesture debouncing
         if gesture == 'Love':
             self.main_menu_proc = True
@@ -68,7 +86,7 @@ class ModeOrchestrator:
         # TODO: figure out the display logic
         # just doing a simple static display for now, so nothing has to happen here
         # STATIC DISPLAY
-        if self.current_mode_index == 1:
+        elif self.current_mode_index == 1:
             # do some checks for display mode
             if gesture == 'Thumb Up':
                 # should cycle through the displays
@@ -79,12 +97,14 @@ class ModeOrchestrator:
                 pass
         
         # CHESS MODE
-        if self.current_mode_index == 2:
+        elif self.current_mode_index == 2:
             if gesture == 'Point Up':
-
+                # chess analyzer is proc'ed
                 pass
 
         # OBJECT RECOGNITION
-        if self.current_mode_index == 3:
-            pass
+        elif self.current_mode_index == 3:
+            if gesture == 'Point Up':
+                # classifer is proc'ed
+                pass
 
