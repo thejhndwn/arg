@@ -1,3 +1,4 @@
+from helpers import GestureConfirmationSystem
 import mediapipe as mp
 from mediapipe.tasks.python import vision
 
@@ -10,7 +11,7 @@ class ModeOrchestrator:
         self.main_menu_selection = 1
         self.main_menu_proc = False
         self.modes = ['Menu Mode', 'Display Mode', 'Chess Mode', 'Classifier Mode']
-
+        self.gesture_confirmation_system = GestureConfirmationSystem()
 
     def gesture_intake(self, result: vision.GestureRecognizerResult, output_image: mp.Image, timestamp_ms:int):
         

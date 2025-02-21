@@ -1,25 +1,13 @@
+from collections import Counter
+
 class GestureConfirmationSystem:
     def __init__(self):
         self.gesture_history = []
         self.history_duration = 0.5  # seconds to track
-        self.confirmation_threshold = 0.7  # percentage of frames that must show target gesture
-        self.timeout_duration = 5.0  # seconds to look for the sustained gesture
+        self.confirmation_threshold = 0.7  # percentage that must show target gesture
         
-        self.current_gesture = None
-        self.gesture_start_time = None
-        self.timeout_start_time = None
-    
     def add_gesture_observation(self, detected_gesture, timestamp):
         current_time = timestamp
-        
-        # Initialize timeout period if this is a new gesture detection session
-        if self.timeout_start_time is None:
-            self.timeout_start_time = current_time
-        
-        # Check if we've exceeded the timeout window
-        if current_time - self.timeout_start_time > self.timeout_duration:
-            self.reset()
-            return None
         
         # Update history - remove old entries
         self.gesture_history = [
@@ -27,7 +15,8 @@ class GestureConfirmationSystem:
             if current_time - t <= self.history_duration
         ]
         
-        # Add new observation
+        # Add new observation if not None
+        # if detected_gesture:
         self.gesture_history.append((detected_gesture, current_time))
         
         # Calculate the majority gesture in the recent history
@@ -43,15 +32,12 @@ class GestureConfirmationSystem:
                 
                 # Check if held for required duration
                 if duration >= self.history_duration:
-                    self.reset()
                     return majority_gesture
         
         return None
     
     def reset(self):
         self.gesture_history = []
-        self.timeout_start_time = None
-
 
 # ### proposed usage in main
 
