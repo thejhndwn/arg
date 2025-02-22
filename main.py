@@ -1,7 +1,7 @@
 from picamera2 import Picamera2
 import numpy as np
 from modes import GestureInterpreter
-from modes import ModeOrchestrator
+from helpers import ModeOrchestrator
 from helpers import DisplayManager
 
 
@@ -22,8 +22,6 @@ print("starting the loop")
 while True:
     image = picam2.capture_array()
     gesture_interpreter.process_frame(image)
-
-    print("restarting the loop")
 
 
 display_manager.close()

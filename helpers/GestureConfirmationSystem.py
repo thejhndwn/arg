@@ -28,11 +28,7 @@ class GestureConfirmationSystem:
             
             # Check if we have a clear majority
             if count / len(gestures) >= self.confirmation_threshold:
-                duration = current_time - min([t for g, t in self.gesture_history if g == majority_gesture])
-                
-                # Check if held for required duration
-                if duration >= self.history_duration:
-                    return majority_gesture
+                 return majority_gesture
         
         return None
     

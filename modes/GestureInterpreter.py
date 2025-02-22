@@ -19,7 +19,6 @@ def callback(result: vision.GestureRecognizerResult,
         #  gesture = recognition_result_list[0].gestures[hand_index]
 
         category_name = gesture[0].category_name
-        print(category_name)
     
 
 class GestureInterpreter():
@@ -38,7 +37,6 @@ class GestureInterpreter():
 
     def process_frame(self, image):
         # TODO: add frame skipping logic here
-        print("entered gesture processing")
 
         rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_image)    

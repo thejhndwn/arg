@@ -18,29 +18,24 @@ class ModeOrchestrator:
 
     def gesture_intake(self, result: vision.GestureRecognizerResult, output_image: mp.Image, timestamp_ms:int):
         
-        print("callback activation")
-        print(result)
 
         if result.gestures:
-            print("found some gestures")
             gesture_object = result.gestures[0] 
             # TODO check the above works, the index should be wrong
             # for the above, somehow it grabs by the hand_index...idk
             #  gesture = recognition_result_list[0].gestures[hand_index]
 
             gesture = gesture_object[0].category_name
-            print("picked up:", gesture)
-            gesture = self.gesture_confirmation_system.add_gesture_observation(gesture)
-            print("aggregated gesture", gesture)
+            aggregated_gesture = self.gesture_confirmation_system.add_gesture_observation(gesture, timestamp_ms)
+            print("aggregated gesture: ", aggregated_gesture, "and normal: ", gesture)
 
-            self.handle_gesture(gesture)
+            self.handle_gesture(aggregated_gesture)
         else:
-            print("no gesture found")
+            print("no hand found")
             # no gesture was found but it might be that we're looking
             # for a chessboard or an object to classify
             pass
         
-        print("exiting the callback")
 
     def handle_gesture(self, gesture):
         current_time = time.time()
