@@ -18,9 +18,12 @@ class GestureConfirmationSystem:
         # Add new observation if not None
         # if detected_gesture:
         self.gesture_history.append((detected_gesture, current_time))
+
+        print(self.gesture_history)
         
         # Calculate the majority gesture in the recent history
         if len(self.gesture_history) >= 3:  # Require at least a few observations
+            print("entered the checks")
             gestures = [g for g, _ in self.gesture_history]
             gesture_counts = Counter(gestures)
             most_common = gesture_counts.most_common(1)[0]
