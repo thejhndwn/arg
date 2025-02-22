@@ -3,7 +3,7 @@ from collections import Counter
 class GestureConfirmationSystem:
     def __init__(self):
         self.gesture_history = []
-        self.history_duration = 0.5  # seconds to track
+        self.history_duration = 500  # seconds to track
         self.confirmation_threshold = 0.7  # percentage that must show target gesture
         
     def add_gesture_observation(self, detected_gesture, timestamp):
