@@ -73,7 +73,7 @@ class ModeOrchestrator:
 
             menu_str = self.gen_main_menu(self.menu, self.main_menu_selection)
             print(menu_str)
-            DisplayManager.display_text(menu_str)
+            self.display_manager.display_text(menu_str)
         
         elif self.current_mode_index == 0:
             # we are in the main menu and need to process the gestures
@@ -82,19 +82,19 @@ class ModeOrchestrator:
                 self.main_menu_selection -=1 
                 if self.main_menu_selection == 0:
                     self.main_menu_selection = 3
-                DisplayManager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
+                self.display_manager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
 
             elif gesture == 'Thumb_Down':
                 # move the selection down
                 self.main_menu_selection +=1
                 if self.main_menu_selection == len(self.menu):
                     self.main_menu_selection = 1
-                DisplayManager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
+                self.display_manager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
 
             elif gesture == 'Victory':
                 # confirm
                 self.current_mode_index = self.main_menu_selection
-                DisplayManager.display_text(self.menu[self.current_mode_index])
+                self.display_manager.display_text(self.menu[self.current_mode_index])
 
         # TODO: figure out the display logic
         # just doing a simple static display for now, so nothing has to happen here
@@ -105,22 +105,22 @@ class ModeOrchestrator:
                 self.display_index +=1
                 if self.display_index == len(self.display_interpreter.display_strings):
                     self.display_index = 0
-                DisplayManager.display_text(self.display_interpreter.display_string(self.display_index))
+                self.display_manager.display_text(self.display_interpreter.display_string(self.display_index))
             if gesture == 'Thumb_Down': 
                 # should cycle through the displays
                 if self.display_index == -1:
                     self.display_index = len(self.display_interpreter.display_strings) - 1
-                DisplayManager.display_text(self.display_interpreter.display_string(self.display_index))
+                self.display_manager.display_text(self.display_interpreter.display_string(self.display_index))
         
         # CHESS MODE
         elif self.current_mode_index == 2:
             if gesture == 'Pointing_Up':
-                DisplayManager.display_text("chess mode proc'd")
+                self.display_manager.display_text("chess mode proc'd")
                 pass
 
         # OBJECT RECOGNITION
         elif self.current_mode_index == 3:
             if gesture == 'Pointing_Up':
-                DisplayManager.display_text("object mode proc'd")
+                self.display_manager.display_text("object mode proc'd")
                 pass
 
