@@ -44,11 +44,11 @@ class ModeOrchestrator:
 
     def gen_main_menu(self, menu_list, selection, marker = ">"):
         # menu_list = menu_list[1:]
-
-        if 0 <= selection < len(menu_list):
-            menu_list[selection] = f"{marker}{menu_list[selection]}"
+        list_copy = menu_list.copy()
+        if 0 <= selection < len(list_copy):
+            list_copy[selection] = f"{marker}{list_copy[selection]}"
         
-        return "\n".join(menu_list[1:])
+        return "\n".join(list_copy[1:])
         
 
     def handle_gesture(self, gesture):
