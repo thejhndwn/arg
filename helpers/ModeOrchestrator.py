@@ -20,6 +20,9 @@ class ModeOrchestrator:
 
         self.last_gesture_time = None
 
+    def close(self):
+        self.display_manager.close()
+
     def gesture_intake(self, result: vision.GestureRecognizerResult, output_image: mp.Image, timestamp_ms:int):
         
 
