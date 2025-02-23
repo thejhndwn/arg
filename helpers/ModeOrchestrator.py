@@ -70,7 +70,10 @@ class ModeOrchestrator:
         elif gesture == 'Victory' and self.main_menu_proc:
             self.main_menu_proc = False
             self.current_mode_index = 0
-            DisplayManager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
+
+            menu_str = self.gen_main_menu(self.menu, self.main_menu_selection)
+            print(menu_str)
+            DisplayManager.display_text(menu_str)
         
         elif self.current_mode_index == 0:
             # we are in the main menu and need to process the gestures
