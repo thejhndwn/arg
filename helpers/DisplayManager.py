@@ -12,7 +12,7 @@ class DisplayManager():
         self.disp.Init()
         self.disp.clear()
 
-    def display_text(self, text, fontsize = 8):
+    def display_text(self, text, fontsize = 12):
         logging.basicConfig(level=logging.DEBUG)
 
 
