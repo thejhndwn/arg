@@ -43,12 +43,12 @@ class ModeOrchestrator:
             pass
 
     def gen_main_menu(self, menu_list, selection, marker = ">"):
-        menu_list = menu_list[1:]
+        # menu_list = menu_list[1:]
 
         if 0 <= selection < len(menu_list):
             menu_list[selection] = f"{marker}{menu_list[selection]}"
         
-        return "\n".join(menu_list)
+        return "\n".join(menu_list[1:])
         
 
     def handle_gesture(self, gesture):
