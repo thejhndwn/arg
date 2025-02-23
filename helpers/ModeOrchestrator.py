@@ -87,13 +87,15 @@ class ModeOrchestrator:
             elif gesture == 'Thumb_Down':
                 # move the selection down
                 self.main_menu_selection +=1
-                if self.main_menu_selection == len(self.menu):
+                if self.main_menu_selection == len(self.menu) + 1:
                     self.main_menu_selection = 1
                 self.display_manager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
 
             elif gesture == 'Closed_Fist':
                 # confirm
                 self.current_mode_index = self.main_menu_selection
+
+                print(self.current_mode_index)
 
                 # TODO: add mode changing stuff, idk. need to like turn on interpreters, or just display for a sec, or in a corner
                 self.display_manager.display_text(self.menu[self.current_mode_index])
