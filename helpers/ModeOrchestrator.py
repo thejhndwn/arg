@@ -93,7 +93,7 @@ class ModeOrchestrator:
 
             elif gesture == 'Closed_Fist':
                 # confirm
-                self.current_mode_index = self.main_menu_selection - 
+                self.current_mode_index = self.main_menu_selection - 1
 
                 # TODO: add mode changing stuff, idk. need to like turn on interpreters, or just display for a sec, or in a corner
                 self.display_manager.display_text(self.menu[self.current_mode_index])
