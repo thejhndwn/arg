@@ -29,7 +29,6 @@ class DisplayManager():
 
         image = image.rotate(180) 
         self.disp.ShowImage(self.disp.getbuffer(image))
-        time.sleep(3)
 
     def close(self):
         self.disp.clear()

@@ -50,16 +50,15 @@ class ModeOrchestrator:
 
     def handle_gesture(self, gesture):
         current_time = time.time()
-
         if self.last_gesture_time:
-            if current_time - self.last_gesture_time > 1000:
+            if current_time - self.last_gesture_time > .500:
                 self.last_gesture_time = current_time
             else:
                 return
         else: 
             self.last_gesture_time = current_time
 
-        print("received the gesture: ", gesture)
+        print("received the gesture after timing stuff: ", gesture)
 
 
 
