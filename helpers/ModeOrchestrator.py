@@ -77,6 +77,8 @@ class ModeOrchestrator:
         
         elif self.current_mode_index == 0:
             # we are in the main menu and need to process the gestures
+            print(self.current_mode_index)
+
             if gesture == 'Thumb_Up':
                 # move the selection up
                 self.main_menu_selection -=1 
