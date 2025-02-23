@@ -7,4 +7,4 @@ class DisplayInterpreter():
             "Bazinga"
         ]
     def display_string(self, index):
-        return self.display_string[index]
+        return self.display_strings[index]
