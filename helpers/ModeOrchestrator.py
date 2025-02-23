@@ -116,7 +116,7 @@ class ModeOrchestrator:
                 self.display_manager.display_text(self.display_interpreter.display_string(self.display_index))
             if gesture == 'Thumb_Down': 
                 # should cycle through the displays
-                if self.display_index == -1:
+                if self.display_index == 0:
                     self.display_index = len(self.display_interpreter.display_strings) - 1
                 self.display_manager.display_text(self.display_interpreter.display_string(self.display_index))
         
