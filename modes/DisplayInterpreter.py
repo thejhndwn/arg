@@ -1,4 +1,10 @@
-def activate_display_mode(frame):
-    # Here, you'd output the "Hello from Mode 1" text or other messages.
-    print("Displaying message on screen...")
-    return frame
+class DisplayInterpreter():
+    def __init__(self):
+        self.display_index = 0
+        self.display_strings = [
+            "It's over 9000",
+            "Believe it!",
+            "Bazinga"
+        ]
+    def display_string(self, index):
+        return self.display_string[index]

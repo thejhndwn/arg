@@ -2,17 +2,21 @@ from helpers import GestureConfirmationSystem
 import mediapipe as mp
 from mediapipe.tasks.python import vision
 import time
+from helpers import DisplayManager
+from modes import DisplayInterpreter
 
 
 
 class ModeOrchestrator:
     def __init__(self):
         self.current_mode_index = 1
-        self.main_menu = False
         self.main_menu_selection = 1
         self.main_menu_proc = False
-        self.modes = ['Menu Mode', 'Display Mode', 'Chess Mode', 'Classifier Mode']
+        self.menu = ['Menu Mode', 'Display Mode', 'Chess Mode', 'Classifier Mode']
         self.gesture_confirmation_system = GestureConfirmationSystem()
+        self.display_manager = DisplayManager()
+        self.display_interpreter = DisplayInterpreter()
+        self.display_index = 0
 
         self.last_gesture_time = None
 
@@ -27,7 +31,6 @@ class ModeOrchestrator:
 
             gesture = gesture_object[0].category_name
             aggregated_gesture = self.gesture_confirmation_system.add_gesture_observation(gesture, timestamp_ms)
-            print("aggregated gesture: ", aggregated_gesture, "and normal: ", gesture)
 
             self.handle_gesture(aggregated_gesture)
         else:
@@ -35,71 +38,87 @@ class ModeOrchestrator:
             # no gesture was found but it might be that we're looking
             # for a chessboard or an object to classify
             pass
+
+    def gen_main_menu(self, menu_list, selection, marker = ">"):
+        menu_list = menu_list[1:]
+
+        if 0 <= selection < len(menu_list):
+            menu_list[selection] = f"{marker}{menu_list[selection]}"
+        
+        return "\n".join(menu_list)
         
 
     def handle_gesture(self, gesture):
         current_time = time.time()
 
         if self.last_gesture_time:
-            if current_time - self.last_gesture_time > 1:
+            if current_time - self.last_gesture_time > 1000:
                 self.last_gesture_time = current_time
             else:
                 return
         else: 
             self.last_gesture_time = current_time
 
+        print("received the gesture: ", gesture)
+
 
 
         # TODO: add frame and gesture debouncing
-        if gesture == 'Love':
+        if gesture == 'ILoveYou':
             self.main_menu_proc = True
-            # TODO: display the main menu proc sign
+            self.display_manager.display_text("main menu proc sign")
 
         elif gesture == 'Victory' and self.main_menu_proc:
-            self.main_menu = True 
             self.main_menu_proc = False
             self.current_mode_index = 0
-            # TODO: open the Main menu
+            DisplayManager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
         
         elif self.current_mode_index == 0:
             # we are in the main menu and need to process the gestures
-            if gesture == 'Thumb Up':
+            if gesture == 'Thumb_Up':
                 # move the selection up
                 self.main_menu_selection -=1 
                 if self.main_menu_selection == 0:
                     self.main_menu_selection = 3
-            if gesture == 'Thumb Down':
+                DisplayManager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
+
+            elif gesture == 'Thumb_Down':
                 # move the selection down
                 self.main_menu_selection +=1
-                if self.main_menu_selection == len(self.modes):
+                if self.main_menu_selection == len(self.menu):
                     self.main_menu_selection = 1
-            if gesture == 'Victory':
+                DisplayManager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
+
+            elif gesture == 'Victory':
                 # confirm
                 self.current_mode_index = self.main_menu_selection
-                # TODO: handle change to current mode
+                DisplayManager.display_text(self.menu[self.current_mode_index])
 
         # TODO: figure out the display logic
         # just doing a simple static display for now, so nothing has to happen here
         # STATIC DISPLAY
         elif self.current_mode_index == 1:
             # do some checks for display mode
-            if gesture == 'Thumb Up':
+            if gesture == 'Thumb_Up':
+                self.display_index +=1
+                if self.display_index == len(self.display_interpreter.display_strings):
+                    self.display_index = 0
+                DisplayManager.display_text(self.display_interpreter.display_string(self.display_index))
+            if gesture == 'Thumb_Down': 
                 # should cycle through the displays
-                #
-                pass
-            if gesture == 'Thumb Down': 
-                # should cycle through the displays
-                pass
+                if self.display_index == -1:
+                    self.display_index = len(self.display_interpreter.display_strings) - 1
+                DisplayManager.display_text(self.display_interpreter.display_string(self.display_index))
         
         # CHESS MODE
         elif self.current_mode_index == 2:
-            if gesture == 'Point Up':
-                # chess analyzer is proc'ed
+            if gesture == 'Pointing_Up':
+                DisplayManager.display_text("chess mode proc'd")
                 pass
 
         # OBJECT RECOGNITION
         elif self.current_mode_index == 3:
-            if gesture == 'Point Up':
-                # classifer is proc'ed
+            if gesture == 'Pointing_Up':
+                DisplayManager.display_text("object mode proc'd")
                 pass
 

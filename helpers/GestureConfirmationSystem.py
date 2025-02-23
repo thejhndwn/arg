@@ -18,12 +18,9 @@ class GestureConfirmationSystem:
         # Add new observation if not None
         # if detected_gesture:
         self.gesture_history.append((detected_gesture, current_time))
-
-        print(self.gesture_history)
         
         # Calculate the majority gesture in the recent history
         if len(self.gesture_history) >= 3:  # Require at least a few observations
-            print("entered the checks")
             gestures = [g for g, _ in self.gesture_history]
             gesture_counts = Counter(gestures)
             most_common = gesture_counts.most_common(1)[0]
@@ -37,29 +34,3 @@ class GestureConfirmationSystem:
     
     def reset(self):
         self.gesture_history = []
-
-# ### proposed usage in main
-
-# gesture_system = GestureConfirmationSystem()
-# last_processed_time = 0
-# process_interval = 0.1  # seconds between gesture processing (frame skipping)
-
-# while True:
-#     frame = camera.read()
-#     current_time = time.time()
-    
-#     # Skip some frames for efficiency
-#     if current_time - last_processed_time < process_interval:
-#         continue
-    
-#     last_processed_time = current_time
-#     detected_gesture = gesture_recognizer.detect(frame)
-    
-#     # Add to our confirmation system
-#     confirmed_gesture = gesture_system.add_gesture_observation(detected_gesture, current_time)
-    
-#     if confirmed_gesture:
-#         print(f"Confirmed gesture: {confirmed_gesture}")
-#         # Take action based on confirmed gesture
-#         if confirmed_gesture == "CAPTURE_CHESS":
-#             process_chess_board(frame)
