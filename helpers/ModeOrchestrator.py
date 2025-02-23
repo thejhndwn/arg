@@ -75,12 +75,10 @@ class ModeOrchestrator:
             self.current_mode_index = 0
 
             menu_str = self.gen_main_menu(self.menu, self.main_menu_selection)
-            print(menu_str)
             self.display_manager.display_text(menu_str)
         
         elif self.current_mode_index == 0:
             # we are in the main menu and need to process the gestures
-            print(self.main_menu_selection)
 
             if gesture == 'Thumb_Up':
                 # move the selection up
@@ -92,7 +90,7 @@ class ModeOrchestrator:
             elif gesture == 'Thumb_Down':
                 # move the selection down
                 self.main_menu_selection +=1
-                if self.main_menu_selection == len(self.menu) + 1:
+                if self.main_menu_selection == len(self.menu):
                     self.main_menu_selection = 1
                 self.display_manager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
 
@@ -104,6 +102,10 @@ class ModeOrchestrator:
 
                 # TODO: add mode changing stuff, idk. need to like turn on interpreters, or just display for a sec, or in a corner
                 self.display_manager.display_text(self.menu[self.current_mode_index])
+            
+
+            print(self.main_menu_selection)
+
 
         elif self.current_mode_index == 1:
             # do some checks for display mode
