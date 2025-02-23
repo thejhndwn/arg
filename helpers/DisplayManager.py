@@ -12,8 +12,8 @@ class DisplayManager():
         self.disp.clear()
 
     def display_text(self, text, fontsize = 12):
-
-        image = Image.new('1', (self.disp.width, self.disp.height), "WHITE")
+        self.disp.clear()
+        image = Image.new('1', (self.disp.width, self.disp.height), "RED")
         draw = ImageDraw.Draw(image)
         font = ImageFont.truetype(os.path.join(self.fontdir, 'Font.ttc'), fontsize)
         draw.line([(0,0),(127,0)], fill = 0)
