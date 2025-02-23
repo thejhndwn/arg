@@ -91,14 +91,13 @@ class ModeOrchestrator:
                     self.main_menu_selection = 1
                 self.display_manager.display_text(self.gen_main_menu(self.menu, self.main_menu_selection))
 
-            elif gesture == 'Victory':
+            elif gesture == 'Closed_Fist':
                 # confirm
                 self.current_mode_index = self.main_menu_selection
+
+                # TODO: add mode changing stuff, idk. need to like turn on interpreters, or just display for a sec, or in a corner
                 self.display_manager.display_text(self.menu[self.current_mode_index])
 
-        # TODO: figure out the display logic
-        # just doing a simple static display for now, so nothing has to happen here
-        # STATIC DISPLAY
         elif self.current_mode_index == 1:
             # do some checks for display mode
             if gesture == 'Thumb_Up':
