@@ -1,11 +1,23 @@
 
-# worklog
+# Installation
 
-ran below to get the camera ai accelerator going 
+after cloning in the project directory...
 
+make and activate your python environment
 ```
-sudo apt install imx500-all
-sudo apt install python3-opencv python3-munkres
-
+python3 -m venv {env name}
+source {env name}/bin/activate
 ```
 
+download the requirements.txt
+```
+pip install -r requirements.txt
+```
+
+run main.py
+```
+python3 main.py
+```
+
+# TODO
+- update the requiremnts.txt
